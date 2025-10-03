@@ -6,12 +6,21 @@ package model;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
 /**
  *
  * @author vanessalagomachado
  */
+@MappedSuperclass
 public class Pessoa {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private int codigo;
+    
     private String nome;
     private String CPF;
     private LocalDate dataNascimento;
@@ -19,7 +28,6 @@ public class Pessoa {
     
     private String email;
     private String endereco;
-    private int codigo;
 
     public String getNome() {
         return nome;

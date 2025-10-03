@@ -143,7 +143,11 @@ public class ListaClienteJF extends javax.swing.JFrame {
         
         Cliente novo = telaCadastro.getCliente();
         //JOptionPane.showMessageDialog(rootPane, novoVendedor);
-        dao.addCliente(novo);
+         try {
+            dao.persist(novo);
+        } catch (Exception ex) {
+            System.out.println("Erro ao castrar o veículo " + novo.toString() + "\nErro: " + ex);
+        }
         loadTabelaClientes();
     }//GEN-LAST:event_btnNovoActionPerformed
 
@@ -163,7 +167,11 @@ public class ListaClienteJF extends javax.swing.JFrame {
                     getValueAt(tblVendedores.getSelectedRow(), 0); 
             int op_remover = JOptionPane.showConfirmDialog(rootPane, "Tem certeza que deseja remover "+obj+"?");
             if(op_remover == JOptionPane.YES_OPTION){
-                dao.removerCliente(obj);
+                try {
+                    dao.remover(obj);
+                } catch (Exception ex) {
+                    System.out.println("Erro ao remover veículo " + obj + "\n Erro: " + ex);
+                }
                 JOptionPane.showMessageDialog(rootPane, "Cliente removido com sucesso... ");
                 loadTabelaClientes();
             }
@@ -182,6 +190,11 @@ public class ListaClienteJF extends javax.swing.JFrame {
             telaEdicao.setCliente(obj);
             
             telaEdicao.setVisible(true);
+            try {
+                dao.persist(telaEdicao.getCliente());
+            } catch (Exception ex) {
+                System.out.println("Erro ao editar veículo\n Erro: " + ex);
+            }
             loadTabelaClientes();
             
             

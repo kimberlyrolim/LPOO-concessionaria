@@ -21,15 +21,18 @@ view\CadastroVeiculoJD$1.class
 model\dao\VeiculoDAO.class
 view\ListaClienteJF$5.class
 model\FormaPgto.class
+model\Cliente_.class
 view\ListaVendedorJF$2.class
 view\CadastroClienteJD.class
 view\CadastroVendedorJD$2.class
 view\ListaClienteJF$2.class
+model\Veiculo_.class
 view\PrincipalJF$4.class
 view\CadastroClienteJD$2.class
 view\ListaVeiculoJF$1.class
 model\dao\ClienteDAO.class
 model\dao\PersistenciaJPA.class
+model\Pessoa_.class
 view\CadastroClienteJD$3$1.class
 view\ListaVendedorJF.class
 model\Veiculo.class
@@ -39,6 +42,7 @@ view\CadastroVeiculoJD$2.class
 view\CadastroVeiculoJD.class
 view\ListaVendedorJF$3.class
 model\Modelo.class
+model\Vendedor_.class
 view\ListaClienteJF$3.class
 view\ListaVeiculoJF$2.class
 view\ListaVeiculoJF$5.class
