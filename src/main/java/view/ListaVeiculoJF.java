@@ -4,6 +4,8 @@
  */
 package view;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import model.Veiculo;
@@ -16,13 +18,12 @@ import model.dao.VeiculoDAO;
 public class ListaVeiculoJF extends javax.swing.JFrame {
 
     VeiculoDAO dao;
-
     /**
      * Creates new form ListaVeiculoJF
      */
     public ListaVeiculoJF() {
         initComponents();
-
+        
         dao = new VeiculoDAO();
         loadTabelaVeiculos();
     }
@@ -139,20 +140,20 @@ public class ListaVeiculoJF extends javax.swing.JFrame {
     private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
         CadastroVeiculoJD telaCadastro = new CadastroVeiculoJD(this, rootPaneCheckingEnabled);
         telaCadastro.setVisible(true);
-
+        
         Veiculo novoVeiculo = telaCadastro.getVeiculo();
-        //JOptionPane.showMessageDialog(rootPane, novoVeiculo);
         try {
+            //JOptionPane.showMessageDialog(rootPane, novoVeiculo);
             dao.persist(novoVeiculo);
         } catch (Exception ex) {
-            System.out.println("Erro ao castrar o veículo " + novoVeiculo.toString() + "\nErro: " + ex);
+            System.out.println("Erro ao castrar o veículo "+novoVeiculo.toString()+" \n Erro: "+ex);
         }
         loadTabelaVeiculos();
     }//GEN-LAST:event_btnNovoActionPerformed
 
     private void btnInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInfoActionPerformed
-        if (tblVeiculos.getSelectedRow() != -1) {
-            Veiculo obj_vendedor = (Veiculo) dao.buscarPorPlaca((String) tblVeiculos.getModel().getValueAt(tblVeiculos.getSelectedRow(), 0)).get();
+        if(tblVeiculos.getSelectedRow() != -1){
+            Veiculo obj_vendedor = (Veiculo) dao.buscarPorPlaca((String)tblVeiculos.getModel().getValueAt(tblVeiculos.getSelectedRow(), 0)).get();
             JOptionPane.showMessageDialog(rootPane, obj_vendedor.exibirDados());
         } else {
             JOptionPane.showMessageDialog(rootPane, "Selecione um vendedor");
@@ -160,37 +161,41 @@ public class ListaVeiculoJF extends javax.swing.JFrame {
     }//GEN-LAST:event_btnInfoActionPerformed
 
     private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
-        if (tblVeiculos.getSelectedRow() != -1) {
-            Veiculo obj_vendedor = (Veiculo) dao.buscarPorPlaca((String) tblVeiculos.getModel().getValueAt(tblVeiculos.getSelectedRow(), 0)).get();
-            int op_remover = JOptionPane.showConfirmDialog(rootPane, "Tem certeza que deseja remover " + obj_vendedor + "?");
-            if (op_remover == JOptionPane.YES_OPTION) {
+        if(tblVeiculos.getSelectedRow() != -1){
+            Veiculo obj_vendedor = (Veiculo) dao.buscarPorPlaca((String)tblVeiculos.getModel().getValueAt(tblVeiculos.getSelectedRow(), 0)).get();
+            int op_remover = JOptionPane.showConfirmDialog(rootPane, "Tem certeza que deseja remover "+obj_vendedor+"?");
+            if(op_remover == JOptionPane.YES_OPTION){
                 try {
                     dao.remover(obj_vendedor);
                 } catch (Exception ex) {
-                    System.out.println("Erro ao remover veículo " + obj_vendedor + "\n Erro: " + ex);
+                    System.out.println("Erro ao remover veículo "+obj_vendedor+"\n Erro: "+ex);
                 }
                 JOptionPane.showMessageDialog(rootPane, "Veiculo removido com sucesso... ");
                 loadTabelaVeiculos();
             }
-
+            
         } else {
             JOptionPane.showMessageDialog(rootPane, "Selecione um vendedor");
         }
     }//GEN-LAST:event_btnRemoverActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        if (tblVeiculos.getSelectedRow() != -1) {
-            Veiculo obj_vendedor = (Veiculo) dao.buscarPorPlaca((String) tblVeiculos.getModel().getValueAt(tblVeiculos.getSelectedRow(), 0)).get();
+        if(tblVeiculos.getSelectedRow() != -1){
+            Veiculo obj_vendedor = (Veiculo) dao.buscarPorPlaca((String)tblVeiculos.getModel().getValueAt(tblVeiculos.getSelectedRow(), 0)).get();
             CadastroVeiculoJD telaEdicao = new CadastroVeiculoJD(this, rootPaneCheckingEnabled);
             telaEdicao.setVeiculo(obj_vendedor);
-
+            
             telaEdicao.setVisible(true);
+            
             try {
                 dao.persist(telaEdicao.getVeiculo());
             } catch (Exception ex) {
-                System.out.println("Erro ao editar veículo\n Erro: " + ex);
+                System.err.println("Erro ao editar veículo\n Erro: "+ex);
             }
+            
             loadTabelaVeiculos();
+            
+            
         } else {
             JOptionPane.showMessageDialog(rootPane, "Selecione um vendedor");
         }
@@ -233,24 +238,24 @@ public class ListaVeiculoJF extends javax.swing.JFrame {
             }
         });
     }
-
-    public void loadTabelaVeiculos() {
-
+    
+    public void loadTabelaVeiculos(){
+        
         // Obtém o modelo da tabela - vincular o que definimos no Desing
         DefaultTableModel modelo = (DefaultTableModel) tblVeiculos.getModel();
         //limpar as linhas e popular 
         modelo.setNumRows(0);
-
-        for (Veiculo obj : dao.listaVeiculos()) {
+        
+        for(Veiculo obj: dao.listaVeiculos()){
             Object[] linha = {
-                obj.getPlaca(),
-                obj.getMarca(),
-                obj.getModelo(),
-                obj.getAnoModelo()
-            };
+                obj.getPlaca(), 
+                    obj.getMarca(), 
+                    obj.getModelo(), 
+                    obj.getAnoModelo()
+                            };
             modelo.addRow(linha);
         }
-
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

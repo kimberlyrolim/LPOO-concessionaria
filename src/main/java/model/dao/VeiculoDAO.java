@@ -12,7 +12,7 @@ import model.Veiculo;
 
 /**
  *
- * @author DELL_I7_02
+ * @author vanessalagomachado
  */
 public class VeiculoDAO extends PersistenciaJPA {
 
@@ -33,10 +33,8 @@ public class VeiculoDAO extends PersistenciaJPA {
         try {
             TypedQuery<Veiculo> query = em.createQuery(
                     "SELECT v FROM Veiculo v WHERE v.placa = :placa", Veiculo.class);
-
             query.setParameter("placa", placa);
             return query.getResultList().stream().findFirst();
-
         } finally {
             em.close();
         }

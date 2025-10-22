@@ -5,31 +5,29 @@
 package model;
 
 import java.io.Serializable;
-import javax.persistence.Column;
+import java.util.List;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  *
  * @author vanessalagomachado
  */
 @Entity
-@Table(name = "Vendedor")
+@Table(name = "vendedores")
 public class Vendedor extends Pessoa implements Serializable{
-    @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Id
+    @Column(name = "vend_id")
+    private int id;
     
-    @Column(name = "ven_id")
-    private Long id;
-
-    @Column(name = "ven_salario")
+    @Column(name = "vend_salario", columnDefinition = "numeric(12,2)")
     private double salario;
     
-    @Column(name = "ven_comissao")
+    @Column(name = "vend_comissao", columnDefinition = "numeric(5,2)")
     private double comissao;
+    
+
 
     public double getSalario() {
         return salario;
@@ -47,13 +45,7 @@ public class Vendedor extends Pessoa implements Serializable{
         this.comissao = comissao;
     }
 
-     public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    
     
     public String exibirDados(){
         String aux = super.exibirDados()+"\n";
@@ -63,4 +55,41 @@ public class Vendedor extends Pessoa implements Serializable{
         return aux;
     }
     
+    
+    // 1 vendedor -> várias vendas
+    @OneToMany(mappedBy = "vendedor")
+    private List<Venda> vendas;
+    
+    public List<Venda> getVendas() { return vendas; }
+    public void setVendas(List<Venda> vendas) { this.vendas = vendas; }
+
+        public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 97 * hash + this.id;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Vendedor other = (Vendedor) obj;
+        return this.id == other.id;
+    }
 }

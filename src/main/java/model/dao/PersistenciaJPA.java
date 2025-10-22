@@ -12,49 +12,60 @@ import javax.persistence.Persistence;
 
 /**
  *
- * @author DELL_I7_02
+ * @author vanessalagomachado
  */
 public class PersistenciaJPA implements InterfaceBD {
 
-    private EntityManager entity;
-    private EntityManagerFactory factory;
+    EntityManager entity;
+    EntityManagerFactory factory;
 
     public PersistenciaJPA() {
-        factory = Persistence.createEntityManagerFactory("pu_concessionaria");
+        //parametro: é o nome da unidade de persistencia (Persistence Unit)
+        factory
+                = Persistence.createEntityManagerFactory("pu_concessionaria");
+        //conecta no bd e executa a estratégia de geração.
         entity = factory.createEntityManager();
     }
 
     @Override
     public Boolean conexaoAberta() {
-        return entity != null && entity.isOpen();
+        return entity.isOpen();
     }
 
     @Override
     public void fecharConexao() {
-        if (entity != null && entity.isOpen()) {
-            entity.close();
-        }
+        entity.close();
     }
 
     @Override
     public Object find(Class c, Object id) throws Exception {
-        return getEntityManager().find(c, id);
+        EntityManager em = getEntityManager();
+        return em.find(c, id); //encontra um determinado registro 
     }
 
+    /**
+     * Este método agora usa 'merge' para salvar (persistir) um novo objeto
+     * ou atualizar (editar) um objeto existente.
+     */
     @Override
     public void persist(Object o) throws Exception {
         entity = getEntityManager();
         try {
             entity.getTransaction().begin();
-            entity.persist(o);
+            
+            // --- ESTA É A ALTERAÇÃO ---
+            // 'merge' é a operação correta para "salvar ou atualizar".
+            // Ele lida com objetos novos (persist) e objetos destacados (merge/update).
+            entity.merge(o); 
+            // -------------------------
+
             entity.getTransaction().commit();
         } catch (Exception e) {
             if (entity.getTransaction().isActive()) {
                 entity.getTransaction().rollback();
             }
-            Logger.getLogger(PersistenciaJPA.class.getName())
-                    .log(Level.SEVERE, "Erro ao persistir objeto", e);
-
+            Logger.getLogger(PersistenciaJPA.class.getName()).log(Level.SEVERE, "Erro ao persistir a entidade: " + o.getClass().getSimpleName(), e);
+            e.printStackTrace(); // Isso imprimirá o erro completo no console
             throw e;
         }
     }
@@ -65,22 +76,24 @@ public class PersistenciaJPA implements InterfaceBD {
         try {
             entity.getTransaction().begin();
             if (!entity.contains(o)) {
-                o = entity.merge(o);
+                o = entity.merge(o); // Garantir que o objeto está no contexto de persistência
             }
-            entity.remove(o);
+            entity.remove(o); // Remover o objeto
             entity.getTransaction().commit();
         } catch (Exception e) {
-
+            System.err.println("Erro ao remover entidade: " + o.getClass().getSimpleName());
+            e.printStackTrace();
             if (entity.getTransaction().isActive()) {
                 entity.getTransaction().rollback();
             }
-            Logger.getLogger(PersistenciaJPA.class.getName())
-                    .log(Level.SEVERE, "Erro ao remover objeto", e);
-
-            throw e;
         }
     }
 
+    /*
+    Todos os métodos agora chamam getEntityManager() 
+    para garantir que o EntityManager esteja sempre aberto e 
+    pronto para uso.
+     */
     public EntityManager getEntityManager() {
         if (entity == null || !entity.isOpen()) {
             entity = factory.createEntityManager();

@@ -5,10 +5,10 @@
 package model.dao;
 
 import java.util.List;
-import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import model.Cliente;
+import model.Veiculo;
 
 /**
  *
@@ -16,14 +16,18 @@ import model.Cliente;
  */
 public class ClienteDAO extends PersistenciaJPA{
     public List<Cliente> listaClientes() {
-        EntityManager em = getEntityManager();
-        try {
-            TypedQuery<Cliente> query
-                    = em.createQuery("SELECT v FROM Cliente v", Cliente.class);
-            return query.getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+    EntityManager em = getEntityManager(); 
+    try {
+        TypedQuery<Cliente> query
+                = em.createQuery("SELECT v FROM Cliente v", Cliente.class);
+        return query.getResultList();
+    } catch (Exception e) {
+        e.printStackTrace();
+        return null;
+    } finally {
+        if (em != null) {
+            em.close(); 
         }
-    }  
+    }
+}
 }

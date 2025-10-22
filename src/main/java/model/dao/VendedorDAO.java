@@ -16,8 +16,9 @@ import model.Vendedor;
  * @author vanessalagomachado
  */
 public class VendedorDAO extends PersistenciaJPA{
-public List<Vendedor> listaVendedores() {
-        EntityManager em = getEntityManager();
+    
+    public List<Vendedor> listaVendedores(){
+    EntityManager em = getEntityManager();
         try {
             TypedQuery<Vendedor> query
                     = em.createQuery("SELECT v FROM Vendedor v", Vendedor.class);
@@ -26,5 +27,5 @@ public List<Vendedor> listaVendedores() {
             e.printStackTrace();
             return null;
         }
-    }  
+    }
 }

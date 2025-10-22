@@ -4,6 +4,8 @@
  */
 package view;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import model.Cliente;
@@ -18,12 +20,13 @@ import model.dao.VendedorDAO;
 public class ListaClienteJF extends javax.swing.JFrame {
 
     ClienteDAO dao;
+
     /**
      * Creates new form ListaVendedorJF
      */
     public ListaClienteJF() {
         initComponents();
-        
+
         dao = new ClienteDAO();
         loadTabelaClientes();
     }
@@ -140,21 +143,22 @@ public class ListaClienteJF extends javax.swing.JFrame {
     private void btnNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoActionPerformed
         CadastroClienteJD telaCadastro = new CadastroClienteJD(this, rootPaneCheckingEnabled);
         telaCadastro.setVisible(true);
-        
+
         Cliente novo = telaCadastro.getCliente();
         //JOptionPane.showMessageDialog(rootPane, novoVendedor);
-         try {
+        try {
             dao.persist(novo);
+
         } catch (Exception ex) {
-            System.out.println("Erro ao castrar o veículo " + novo.toString() + "\nErro: " + ex);
+            System.err.println("Erro ao adicionar cliente: " + ex);
         }
         loadTabelaClientes();
     }//GEN-LAST:event_btnNovoActionPerformed
 
     private void btnInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInfoActionPerformed
-        if(tblVendedores.getSelectedRow() != -1){
-            Cliente obj = (Cliente)tblVendedores.getModel().
-                    getValueAt(tblVendedores.getSelectedRow(), 0); 
+        if (tblVendedores.getSelectedRow() != -1) {
+            Cliente obj = (Cliente) tblVendedores.getModel().
+                    getValueAt(tblVendedores.getSelectedRow(), 0);
             JOptionPane.showMessageDialog(rootPane, obj.exibirDados());
         } else {
             JOptionPane.showMessageDialog(rootPane, "Selecione um cliente");
@@ -162,42 +166,46 @@ public class ListaClienteJF extends javax.swing.JFrame {
     }//GEN-LAST:event_btnInfoActionPerformed
 
     private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
-        if(tblVendedores.getSelectedRow() != -1){
-            Cliente obj = (Cliente)tblVendedores.getModel().
-                    getValueAt(tblVendedores.getSelectedRow(), 0); 
-            int op_remover = JOptionPane.showConfirmDialog(rootPane, "Tem certeza que deseja remover "+obj+"?");
-            if(op_remover == JOptionPane.YES_OPTION){
+        if (tblVendedores.getSelectedRow() != -1) {
+            Cliente obj = (Cliente) tblVendedores.getModel().
+                    getValueAt(tblVendedores.getSelectedRow(), 0);
+            int op_remover = JOptionPane.showConfirmDialog(rootPane, "Tem certeza que deseja remover " + obj + "?");
+            if (op_remover == JOptionPane.YES_OPTION) {
                 try {
                     dao.remover(obj);
+                    JOptionPane.showMessageDialog(rootPane, "Cliente removido com sucesso... ");
+                    loadTabelaClientes();
                 } catch (Exception ex) {
-                    System.out.println("Erro ao remover veículo " + obj + "\n Erro: " + ex);
+                    System.err.println("Erro ao remover cliente: " + ex);
                 }
-                JOptionPane.showMessageDialog(rootPane, "Cliente removido com sucesso... ");
-                loadTabelaClientes();
             }
-            
+
         } else {
             JOptionPane.showMessageDialog(rootPane, "Selecione um cliente");
         }
     }//GEN-LAST:event_btnRemoverActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        if(tblVendedores.getSelectedRow() != -1){
-            Cliente obj = (Cliente)tblVendedores.getModel().
-                    getValueAt(tblVendedores.getSelectedRow(), 0); 
-            
+        if (tblVendedores.getSelectedRow() != -1) {
+            Cliente obj = (Cliente) tblVendedores.getModel().
+                    getValueAt(tblVendedores.getSelectedRow(), 0);
+
             CadastroClienteJD telaEdicao = new CadastroClienteJD(this, rootPaneCheckingEnabled);
             telaEdicao.setCliente(obj);
-            
+
             telaEdicao.setVisible(true);
+            
+            
             try {
                 dao.persist(telaEdicao.getCliente());
+
             } catch (Exception ex) {
-                System.out.println("Erro ao editar veículo\n Erro: " + ex);
+                System.err.println("Erro ao editar cliente: " + ex);
             }
+            
+            
             loadTabelaClientes();
-            
-            
+
         } else {
             JOptionPane.showMessageDialog(rootPane, "Selecione um cliente");
         }
@@ -240,22 +248,22 @@ public class ListaClienteJF extends javax.swing.JFrame {
             }
         });
     }
-    
-    public void loadTabelaClientes(){
-        
+
+    public void loadTabelaClientes() {
+
         // Obtém o modelo da tabela - vincular o que definimos no Desing
         DefaultTableModel modelo = (DefaultTableModel) tblVendedores.getModel();
         //limpar as linhas e popular 
         modelo.setNumRows(0);
-        
-        for(Cliente obj: dao.listaClientes()){
+
+        for (Cliente obj : dao.listaClientes()) {
             Object[] linha = {
-                    obj, 
-                    obj.getCPF()
-                            };
+                obj,
+                obj.getCPF()
+            };
             modelo.addRow(linha);
         }
-        
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
