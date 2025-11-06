@@ -5,8 +5,8 @@
 package model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects; 
 import javax.persistence.*;
 
 /**
@@ -43,6 +43,8 @@ public class Veiculo implements Serializable {
     @Column(name = "vei_modelo")
     private Modelo modelo;
     
+    @Column(name = "vei_disponivel")
+    private Boolean disponivel;
 
     public String getPlaca() {
         return placa;
@@ -102,7 +104,12 @@ public class Veiculo implements Serializable {
 
     @Override
     public String toString() {
-        return placa + " - " + modelo;
+        return placa;
+    }
+    
+    public Veiculo(){
+        disponivel = true;
+        vendas = new ArrayList<>();
     }
     
     public String exibirDados(){
@@ -114,6 +121,7 @@ public class Veiculo implements Serializable {
         aux += "Modelo: "+modelo+"\n";
         aux += "Marca: "+marca+"\n";
         aux += "Valor: R$"+valor+"\n";
+        aux += disponivel ? "[DISPONÍVEL]" : "[NÃO DISPONÍVEL]";
 
         return aux;
     }
@@ -126,38 +134,12 @@ public class Veiculo implements Serializable {
     public List<Venda> getVendas() { return vendas; }
     public void setVendas(List<Venda> vendas) { this.vendas = vendas; }
 
-    public int getId() {
-        return id;
+    public Boolean getDisponivel() {
+        return disponivel;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 89 * hash + this.id;
-        hash = 89 * hash + Objects.hashCode(this.placa);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Veiculo other = (Veiculo) obj;
-        if (this.id != 0 && other.id != 0) {
-            return this.id == other.id;
-        }
-        return Objects.equals(this.placa, other.placa);
+    public void setDisponivel(Boolean disponivel) {
+        this.disponivel = disponivel;
     }
 
     

@@ -4,6 +4,7 @@
  */
 package model.dao;
 
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
@@ -29,6 +30,7 @@ public class PersistenciaJPA implements InterfaceBD {
 
     @Override
     public Boolean conexaoAberta() {
+
         return entity.isOpen();
     }
 
@@ -40,25 +42,18 @@ public class PersistenciaJPA implements InterfaceBD {
     @Override
     public Object find(Class c, Object id) throws Exception {
         EntityManager em = getEntityManager();
-        return em.find(c, id); //encontra um determinado registro 
+        return em.find(c, id);//encontra um determinado registro 
     }
 
-    /**
-     * Este método agora usa 'merge' para salvar (persistir) um novo objeto
-     * ou atualizar (editar) um objeto existente.
-     */
     @Override
     public void persist(Object o) throws Exception {
         entity = getEntityManager();
         try {
             entity.getTransaction().begin();
-            
-            // --- ESTA É A ALTERAÇÃO ---
-            // 'merge' é a operação correta para "salvar ou atualizar".
-            // Ele lida com objetos novos (persist) e objetos destacados (merge/update).
-            entity.merge(o); 
-            // -------------------------
-
+            if (!entity.contains(o)) {
+                o = entity.merge(o); // Anexa o objeto ao contexto de persistência, se necessário
+            }
+            entity.persist(o);
             entity.getTransaction().commit();
         } catch (Exception e) {
             if (entity.getTransaction().isActive()) {
@@ -100,4 +95,6 @@ public class PersistenciaJPA implements InterfaceBD {
         }
         return entity;
     }
+
+    
 }

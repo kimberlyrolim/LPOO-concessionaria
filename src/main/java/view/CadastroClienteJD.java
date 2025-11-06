@@ -33,7 +33,7 @@ public class CadastroClienteJD extends javax.swing.JDialog {
         initComponents();
         
         
-        cliente = new Cliente();
+        
     }
 
     /**
@@ -151,9 +151,15 @@ public class CadastroClienteJD extends javax.swing.JDialog {
 
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
         
-
+        if(cliente == null)
+            cliente = new Cliente();
         
         try{
+            String cpf = txtCPF.getText();
+            if (!isValidCPF(cpf)) {
+                JOptionPane.showMessageDialog(rootPane, "CPF inválido! Por favor, verifique os números e o formato 000.000.000-00.");
+                return; 
+            }
             this.cliente.setNome(txtNome.getText());
             this.cliente.setCPF(txtCPF.getText());
             // sintaxe para conversão: LocalDate.parse(String com data, máscara)
@@ -163,8 +169,10 @@ public class CadastroClienteJD extends javax.swing.JDialog {
             
             this.dispose();
         } catch (DateTimeParseException e1){
+            cliente = null;
             JOptionPane.showMessageDialog(rootPane, "Data inválida!! Informe data no formato dd-mm-yyyy\n"+e1);
         }  catch (Exception e3){
+            cliente = null;
             JOptionPane.showMessageDialog(rootPane, "Ocorreu um erro inesperado: \n"+e3);
         } 
         
@@ -245,5 +253,47 @@ public class CadastroClienteJD extends javax.swing.JDialog {
        
         txtTelefone.setText(cliente.getTelefone());
         txtDtNascimento.setText(cliente.getDataNascimento().format(formatter));
+    }
+    
+    
+     public static boolean isValidCPF(String cpf) {
+        cpf = cpf.replaceAll("[^0-9]", "");
+
+        if (cpf.length() != 11 || cpf.matches("(\\d)\\1{10}")) {//verifica se 111111111
+            return false;
+        }
+        try {
+            int[] digitos = new int[9];
+            for (int i = 0; i < 9; i++) {
+                digitos[i] = Integer.parseInt(cpf.substring(i, i + 1));
+            }
+            int dv1 = Integer.parseInt(cpf.substring(9, 10));
+            int dv2 = Integer.parseInt(cpf.substring(10, 11));
+
+            int soma = 0;
+            for (int i = 0; i < 9; i++) {
+                soma += digitos[i] * (10 - i);
+            }
+            int resultado = soma % 11;
+            int primeiroDVCalculado = (resultado < 2) ? 0 : (11 - resultado);
+
+            if (primeiroDVCalculado != dv1) {
+                return false;
+            }
+
+            soma = 0;
+            for (int i = 0; i < 9; i++) {
+                soma += digitos[i] * (11 - i);
+            }
+            soma += primeiroDVCalculado * 2;
+
+            resultado = soma % 11;
+            int segundoDVCalculado = (resultado < 2) ? 0 : (11 - resultado);
+
+            return segundoDVCalculado == dv2;
+
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

@@ -23,19 +23,6 @@ public class VendaDAO extends PersistenciaJPA{
         } catch (Exception e) {
             e.printStackTrace();
             return null;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
-    }
-
-    public void atualizar(Venda vendaEditada) {
-        try {
-            persist(vendaEditada);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }
-

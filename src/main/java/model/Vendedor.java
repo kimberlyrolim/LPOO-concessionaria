@@ -5,6 +5,7 @@
 package model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.*;
@@ -27,7 +28,9 @@ public class Vendedor extends Pessoa implements Serializable{
     @Column(name = "vend_comissao", columnDefinition = "numeric(5,2)")
     private double comissao;
     
-
+    public Vendedor(){
+        vendas = new ArrayList<>();
+    }
 
     public double getSalario() {
         return salario;
@@ -63,33 +66,4 @@ public class Vendedor extends Pessoa implements Serializable{
     public List<Venda> getVendas() { return vendas; }
     public void setVendas(List<Venda> vendas) { this.vendas = vendas; }
 
-        public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-    
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 97 * hash + this.id;
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Vendedor other = (Vendedor) obj;
-        return this.id == other.id;
-    }
 }

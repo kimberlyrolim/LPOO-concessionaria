@@ -17,11 +17,13 @@ import model.Marca;
 import model.Modelo;
 import model.Veiculo;
 import model.Vendedor;
+import model.dao.Util;
 
 /**
  *
  * @author vanessalagomachado
  */
+
 public class CadastroVeiculoJD extends javax.swing.JDialog {
     private Veiculo veiculo;
    
@@ -194,72 +196,129 @@ public class CadastroVeiculoJD extends javax.swing.JDialog {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
-        
 
-        
-        try{
-            veiculo.setPlaca(txtPlaca.getText());
-            veiculo.setCor(txtCor.getText());
-            veiculo.setMarca((Marca)cmbMarca.getSelectedItem());
-            veiculo.setModelo((Modelo)cmbModelo.getSelectedItem());
+        if (veiculo == null) {
+            veiculo = new Veiculo();
+        }
+
+        try {
+            String placa = txtPlaca.getText().trim().replaceAll("-", "").toUpperCase();
+
+            if (placa.length() != 7) {
+
+                JOptionPane.showMessageDialog(rootPane, "Placa inválida! Padrão: ABC1234");
+                return;
+            }
+
+            boolean formatoInvalido = false;
+
+            for (int i = 0; i < placa.length(); i++) {
+                char caractere = placa.charAt(i);
+
+                if (i >= 0 && i <= 2) { // 1, 2, 3
+                    if (!Character.isLetter(caractere)) {
+                        formatoInvalido = true;
+                        break;
+                    }
+                } else if (i == 3 || i == 5 || i == 6) { //4, 6, 7
+                    if (!Character.isDigit(caractere)) {
+                        formatoInvalido = true;
+                        break;
+                    }      
+                }
+            }
+
+            if (formatoInvalido) {
+                JOptionPane.showMessageDialog(rootPane, "Placa inválida! O formato deve ser ABC1234 (Letra, Letra, Letra, Número, Letra/Número, Número, Número).");
+                return;
+            }else {
+                veiculo.setPlaca(placa);
+            }
+
+        veiculo.setCor(txtCor.getText());
+        veiculo.setMarca((Marca) cmbMarca.getSelectedItem());
+        veiculo.setModelo((Modelo) cmbModelo.getSelectedItem());
+        int anoFabricao = Integer.parseInt(txtAnoFabricacao.getText().trim());
+        if (Util.validaAno(anoFabricao)) {
             veiculo.setAnoFabricacao(Integer.parseInt(txtAnoFabricacao.getText().trim()));
+        } else {
+            return;
+        }
+
+        int anoModelo = Integer.parseInt(txtAnoModelo.getText().trim());
+        if (Util.validaAno(anoModelo)) {
             veiculo.setAnoModelo(Integer.parseInt(txtAnoModelo.getText().trim()));
-            veiculo.setValor(Double.parseDouble(txtValor.getText().trim().replace(",", ".")));
-            
-            this.dispose();
-        } catch (NumberFormatException e1){
-            JOptionPane.showMessageDialog(rootPane, "Valor Inválido\n"+e1);
-        } catch (Exception e3){
-            JOptionPane.showMessageDialog(rootPane, "Ocorreu um erro inesperado: \n"+e3);
-        } 
-        
-        
+        } else {
+            return;
+        }
+        veiculo.setAnoModelo(Integer.parseInt(txtAnoModelo.getText().trim()));
+
+        veiculo.setValor(Double.parseDouble(txtValor.getText().trim().replace(",", ".")));
+
+        this.dispose();
+    }
+    catch (NumberFormatException e1
+
+    
+        ){
+            veiculo = null;
+        JOptionPane.showMessageDialog(rootPane, "Valor Inválido\n" + e1);
+    }
+    catch (Exception e3
+
+    
+        ){
+            veiculo = null;
+        JOptionPane.showMessageDialog(rootPane, "Ocorreu um erro inesperado: \n" + e3);
+    }
+
+
     }//GEN-LAST:event_btnSalvarActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+    /* Set the Nimbus look and feel */
+    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+    /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+     */
+    try {
+        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+                javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                break;
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(CadastroVeiculoJD.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(CadastroVeiculoJD.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(CadastroVeiculoJD.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(CadastroVeiculoJD.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                CadastroVeiculoJD dialog = new CadastroVeiculoJD(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
+    } catch (ClassNotFoundException ex) {
+        java.util.logging.Logger.getLogger(CadastroVeiculoJD.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (InstantiationException ex) {
+        java.util.logging.Logger.getLogger(CadastroVeiculoJD.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (IllegalAccessException ex) {
+        java.util.logging.Logger.getLogger(CadastroVeiculoJD.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        java.util.logging.Logger.getLogger(CadastroVeiculoJD.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
     }
+    //</editor-fold>
+    //</editor-fold>
+    //</editor-fold>
+    //</editor-fold>
+
+    /* Create and display the dialog */
+    java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+            CadastroVeiculoJD dialog = new CadastroVeiculoJD(new javax.swing.JFrame(), true);
+            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent e) {
+                    System.exit(0);
+                }
+            });
+            dialog.setVisible(true);
+        }
+    });
+}
 
     
     
@@ -287,39 +346,39 @@ public class CadastroVeiculoJD extends javax.swing.JDialog {
     // End of variables declaration//GEN-END:variables
 
     private void loadMarcas() {
-        cmbMarca.removeAllItems();
-        for(Marca obj: Marca.values()){
-            cmbMarca.addItem(obj);
-        }
+    cmbMarca.removeAllItems();
+    for (Marca obj : Marca.values()) {
+        cmbMarca.addItem(obj);
     }
+}
 
     private void loadModelos() {
-        cmbModelo.removeAllItems();
+    cmbModelo.removeAllItems();
 //        for(Modelo obj: Modelo.values()){
 //            cmbModelo.addItem(obj);
 //        }
-        List<Modelo> modelos = Arrays.asList(Modelo.values());
-        modelos.forEach(obj -> cmbModelo.addItem(obj));
-        
-    }
+    List<Modelo> modelos = Arrays.asList(Modelo.values());
+    modelos.forEach(obj -> cmbModelo.addItem(obj));
+
+}
     
     
 
     public Veiculo getVeiculo() {
-        return veiculo;
-    }
+    return veiculo;
+}
 
     public void setVeiculo(Veiculo veiculo) {
-        this.veiculo = veiculo;
-        
-        txtPlaca.setText(veiculo.getPlaca());
-        txtCor.setText(veiculo.getCor());
-        txtAnoModelo.setText(""+veiculo.getAnoModelo());
-        txtAnoFabricacao.setText(""+veiculo.getAnoFabricacao());
-        cmbMarca.setSelectedItem(veiculo.getMarca());
-        cmbModelo.setSelectedItem(veiculo.getModelo());
-        txtValor.setText(""+veiculo.getValor());
-    }
+    this.veiculo = veiculo;
+
+    txtPlaca.setText(veiculo.getPlaca());
+    txtCor.setText(veiculo.getCor());
+    txtAnoModelo.setText("" + veiculo.getAnoModelo());
+    txtAnoFabricacao.setText("" + veiculo.getAnoFabricacao());
+    cmbMarca.setSelectedItem(veiculo.getMarca());
+    cmbModelo.setSelectedItem(veiculo.getModelo());
+    txtValor.setText("" + veiculo.getValor());
+}
     
     
 }

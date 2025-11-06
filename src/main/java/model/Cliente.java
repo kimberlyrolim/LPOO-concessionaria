@@ -5,8 +5,8 @@
 package model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects; 
 import javax.annotation.processing.Generated;
 import javax.persistence.*;
 
@@ -41,28 +41,11 @@ public class Cliente extends Pessoa implements Serializable{
     
     public List<Venda> getVendas() { return vendas; }
     public void setVendas(List<Venda> vendas) { this.vendas = vendas; }
-
     
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 79 * hash + Objects.hashCode(this.id);
-        return hash;
+    
+    
+   public Cliente(){
+        vendas = new ArrayList<>();
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Cliente other = (Cliente) obj;
-        return Objects.equals(this.id, other.id);
-    }  
     
 }

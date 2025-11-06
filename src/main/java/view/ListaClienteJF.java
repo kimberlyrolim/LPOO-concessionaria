@@ -146,13 +146,15 @@ public class ListaClienteJF extends javax.swing.JFrame {
 
         Cliente novo = telaCadastro.getCliente();
         //JOptionPane.showMessageDialog(rootPane, novoVendedor);
-        try {
-            dao.persist(novo);
+        if (novo != null) {
+            try {
+                dao.persist(novo);
+                loadTabelaClientes();
+            } catch (Exception ex) {
+                System.err.println("Erro ao adicionar cliente: " + ex);
+            }
 
-        } catch (Exception ex) {
-            System.err.println("Erro ao adicionar cliente: " + ex);
         }
-        loadTabelaClientes();
     }//GEN-LAST:event_btnNovoActionPerformed
 
     private void btnInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInfoActionPerformed
@@ -194,18 +196,21 @@ public class ListaClienteJF extends javax.swing.JFrame {
             telaEdicao.setCliente(obj);
 
             telaEdicao.setVisible(true);
+
             
+            Cliente obj_retornado = telaEdicao.getCliente();
+                    
+        if (obj_retornado != null) {
             
             try {
-                dao.persist(telaEdicao.getCliente());
-
+                dao.persist(obj_retornado);
+                loadTabelaClientes();
             } catch (Exception ex) {
                 System.err.println("Erro ao editar cliente: " + ex);
             }
-            
-            
-            loadTabelaClientes();
 
+            
+        }
         } else {
             JOptionPane.showMessageDialog(rootPane, "Selecione um cliente");
         }

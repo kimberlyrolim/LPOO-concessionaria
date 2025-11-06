@@ -4,10 +4,10 @@
  */
 package model;
 
+import model.dao.Util;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
 import javax.persistence.*;
 
 /**
@@ -17,7 +17,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "vendas")
 public class Venda implements Serializable{
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "venda_id")
@@ -49,27 +48,7 @@ public class Venda implements Serializable{
     @JoinColumn(name = "venda_veiculo")
     private Veiculo veiculo;
     
-    public String exibirDados(){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        String aux = "Detalhes da Venda: \n\n";
-        aux += "ID da Venda: " + id + "\n";
-        aux += "Data da Venda: " + (dataVenda != null ? dataVenda.format(formatter) : "N/A") + "\n";
-        aux += "Valor: R$ " + String.format(java.util.Locale.US, "%.2f", valorVenda) + "\n\n";
-        
-        aux += "--- Cliente ---\n";
-        aux += (cliente != null ? cliente.getNome() : "N/A") + "\n\n";
-        
-        aux += "--- Vendedor ---\n";
-        aux += (vendedor != null ? vendedor.getNome() : "N/A") + "\n\n";
-        
-        aux += "--- Veículo ---\n";
-        aux += (veiculo != null ? veiculo.getPlaca() + " - " + veiculo.getModelo() : "N/A") + "\n\n";
-        
-        aux += "Forma de Contrato: " + formaContrato + "\n";
-        aux += "Forma de Pagamento: " + formaPgto + "\n";
     
-        return aux;
-    }
 
     public LocalDateTime getDataVenda() {
         return dataVenda;
@@ -129,12 +108,9 @@ public class Venda implements Serializable{
 
     @Override
     public String toString() {
-        if (dataVenda != null) {
-            return dataVenda.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
-        }
-        return "Nova Venda";
+        return Util.formatarDataHora(dataVenda);
     }
-   
+
     public int getId() {
         return id;
     }
@@ -143,25 +119,17 @@ public class Venda implements Serializable{
         this.id = id;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 71 * hash + this.id;
-        return hash;
+    public String exibirDados() {
+        
+        String aux = "Dados da Venda:\n";
+        aux += "Data|Hora:"+Util.formatarDataHora(dataVenda)+"\n";
+        aux += "Veiculo"+getVeiculo().getPlaca()+"\n";
+        aux += "Cliente: "+getCliente().getNome()+"\n";
+        aux += "Vendedor: "+getVendedor().getNome()+"\n";
+         aux += "Forma de Contrato: "+formaContrato+"\n";
+          aux += "Forma de Pagamento: "+formaPgto+"\n";
+          return aux;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Venda other = (Venda) obj;
-        return this.id == other.id;
-    }
+    
+    
 }

@@ -16,11 +16,11 @@ import model.Vendedor;
  * @author vanessalagomachado
  */
 public class CadastroVendedorJD extends javax.swing.JDialog {
+
     private Vendedor vendedor;
-    
+
     // Define o mesmo formatador usado para a criação da string
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-    
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     /**
      * Creates new form CadastroVendedorJD
@@ -28,9 +28,7 @@ public class CadastroVendedorJD extends javax.swing.JDialog {
     public CadastroVendedorJD(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        
-        
-        vendedor = new Vendedor();
+
     }
 
     /**
@@ -167,28 +165,46 @@ public class CadastroVendedorJD extends javax.swing.JDialog {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
-        
 
-        
-        try{
+        if (vendedor == null) {
+            vendedor = new Vendedor();
+        }
+
+        try {
+            String cpf = txtCPF.getText();
+            if (!isValidCPF(cpf)) {
+            JOptionPane.showMessageDialog(rootPane, "CPF inválido! Por favor, verifique os números e o formato 000.000.000-00.");                
+            return; 
+            }
             this.vendedor.setNome(txtNome.getText());
             this.vendedor.setCPF(txtCPF.getText());
             // sintaxe para conversão: LocalDate.parse(String com data, máscara)
             this.vendedor.setDataNascimento(LocalDate.parse(txtDtNascimento.getText(), formatter));
             this.vendedor.setTelefone(txtTelefone.getText());
-            this.vendedor.setSalario(Double.parseDouble(txtSalario.getText()));
-            this.vendedor.setComissao(Double.parseDouble(txtComissao.getText()));
-            
+            double salario = Double.parseDouble(txtSalario.getText());
+            this.vendedor.setSalario(salario);
+
+            double comissao = Double.parseDouble(txtComissao.getText());
+            if (comissao < 0 || comissao >= 100) {
+                JOptionPane.showMessageDialog(rootPane, "Valor de comissão inválido! Informe somente valores entre [0-100]%");
+                return;
+            } else {
+                this.vendedor.setComissao(comissao);
+            }
+
             this.dispose();
-        } catch (DateTimeParseException e1){
-            JOptionPane.showMessageDialog(rootPane, "Data inválida!! Informe data no formato dd-mm-yyyy\n"+e1);
-        } catch (NumberFormatException e2){
-            JOptionPane.showMessageDialog(rootPane, "Valores inválidos!! Em salário e comissão informe somente valores numéricos\n"+e2);
-        } catch (Exception e3){
-            JOptionPane.showMessageDialog(rootPane, "Ocorreu um erro inesperado: \n"+e3);
-        } 
-        
-        
+        } catch (DateTimeParseException e1) {
+            vendedor = null;
+            JOptionPane.showMessageDialog(rootPane, "Data inválida!! Informe data no formato dd-mm-yyyy\n" + e1);
+        } catch (NumberFormatException e2) {
+            vendedor = null;
+            JOptionPane.showMessageDialog(rootPane, "Valores inválidos!! Em salário e comissão informe somente valores numéricos\n" + e2);
+        } catch (Exception e3) {
+            vendedor = null;
+            JOptionPane.showMessageDialog(rootPane, "Ocorreu um erro inesperado: \n" + e3);
+        }
+
+
     }//GEN-LAST:event_btnSalvarActionPerformed
 
     /**
@@ -241,14 +257,53 @@ public class CadastroVendedorJD extends javax.swing.JDialog {
         this.vendedor = vendedor;
         txtNome.setText(vendedor.getNome());
         txtCPF.setText(vendedor.getCPF());
-        txtComissao.setText(""+vendedor.getComissao());
-        txtSalario.setText(""+vendedor.getSalario());
+        txtComissao.setText("" + vendedor.getComissao());
+        txtSalario.setText("" + vendedor.getSalario());
         txtTelefone.setText(vendedor.getTelefone());
         txtDtNascimento.setText(vendedor.getDataNascimento().format(formatter));
-        
+
     }
-    
-    
+
+    public static boolean isValidCPF(String cpf) {
+        cpf = cpf.replaceAll("[^0-9]", "");
+
+        if (cpf.length() != 11 || cpf.matches("(\\d)\\1{10}")) {//verifica se 111111111
+            return false;
+        }
+        try {
+            int[] digitos = new int[9];
+            for (int i = 0; i < 9; i++) {
+                digitos[i] = Integer.parseInt(cpf.substring(i, i + 1));
+            }
+            int dv1 = Integer.parseInt(cpf.substring(9, 10));
+            int dv2 = Integer.parseInt(cpf.substring(10, 11));
+
+            int soma = 0;
+            for (int i = 0; i < 9; i++) {
+                soma += digitos[i] * (10 - i);
+            }
+            int resultado = soma % 11;
+            int primeiroDVCalculado = (resultado < 2) ? 0 : (11 - resultado);
+
+            if (primeiroDVCalculado != dv1) {
+                return false;
+            }
+
+            soma = 0;
+            for (int i = 0; i < 9; i++) {
+                soma += digitos[i] * (11 - i);
+            }
+            soma += primeiroDVCalculado * 2;
+
+            resultado = soma % 11;
+            int segundoDVCalculado = (resultado < 2) ? 0 : (11 - resultado);
+
+            return segundoDVCalculado == dv2;
+
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancelar;
